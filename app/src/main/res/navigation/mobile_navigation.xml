@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_plants">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="pt.ipt.dam.waterme.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_plants"
+        android:name="pt.ipt.dam.waterme.ui.plants.PlantsFragment"
+        android:label="@string/title_plants"
+        tools:layout="@layout/fragment_plants" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="pt.ipt.dam.waterme.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_profile"
+        android:name="pt.ipt.dam.waterme.ui.profile.ProfileFragment"
+        android:label="@string/title_perfil"
+        tools:layout="@layout/fragment_profile" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="pt.ipt.dam.waterme.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_about"
+        android:name="pt.ipt.dam.waterme.ui.about.AboutFragment"
+        android:label="@string/title_about"
+        tools:layout="@layout/fragment_about" />
 </navigation>

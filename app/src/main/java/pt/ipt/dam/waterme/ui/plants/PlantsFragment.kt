@@ -1,4 +1,4 @@
-package pt.ipt.dam.waterme.ui.notifications
+package pt.ipt.dam.waterme.ui.plants
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import pt.ipt.dam.waterme.databinding.FragmentNotificationsBinding
+import pt.ipt.dam.waterme.databinding.FragmentPlantsBinding
 
-class NotificationsFragment : Fragment() {
+class PlantsFragment : Fragment() {
 
-    private var _binding: FragmentNotificationsBinding? = null
+    private var _binding: FragmentPlantsBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,16 +22,18 @@ class NotificationsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val notificationsViewModel =
-            ViewModelProvider(this).get(NotificationsViewModel::class.java)
+        val plantsViewModel =
+            ViewModelProvider(this).get(PlantsViewModel::class.java)
 
-        _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
+        _binding = FragmentPlantsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-        notificationsViewModel.text.observe(viewLifecycleOwner) {
+        /*val textView: TextView = binding.textHome
+        plantsViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
+
+         */
         return root
     }
 

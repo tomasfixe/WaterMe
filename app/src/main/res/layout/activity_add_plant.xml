@@ -68,21 +68,38 @@
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/tvLocation"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Localização: Não definida"
-            android:textAlignment="center" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp">
 
-        <Button
-            android:id="@+id/btnGetLocation"
+            <Button
+                android:id="@+id/btnMeasureLight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Medir Luz"
+                app:icon="@android:drawable/ic_menu_view" />
+
+            <TextView
+                android:id="@+id/tvLightLevel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="16dp"
+                android:text="Luz: N/A"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Obter GPS"
-            app:icon="@android:drawable/ic_menu_mylocation" />
+            android:text="Escala: 0 (Escuro) a 1000+ (Muito Claro)"
+            android:textSize="12sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginBottom="8dp"/>
 
         <Button
             android:id="@+id/btnSavePlant"
@@ -90,7 +107,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
             android:layout_marginBottom="32dp"
-            android:text="Salvar Planta"
+            android:text="Guardar Planta"
             android:backgroundTint="@color/purple_500"
             android:textColor="@android:color/white"
             android:textStyle="bold"/>

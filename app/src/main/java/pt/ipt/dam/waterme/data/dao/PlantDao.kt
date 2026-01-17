@@ -24,6 +24,9 @@ interface PlantDao {
     @Delete
     suspend fun deletePlant(plant: Plant)
 
+    @Query("DELETE FROM plants WHERE id = :plantId")
+    suspend fun deleteById(plantId: Int)
+
     // Ler todas as plantas (LiveData atualiza a lista automaticamente)
     @Query("SELECT * FROM plants ORDER BY nextWateringDate ASC")
     fun getAllPlants(): LiveData<List<Plant>>

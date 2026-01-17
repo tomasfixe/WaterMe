@@ -34,7 +34,23 @@ class PlantsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Configurar a lista
-        val adapter = PlantAdapter()
+        val adapter = PlantAdapter { plant ->
+            // Código que corre quando clicas numa planta
+            val intent = android.content.Intent(requireContext(), pt.ipt.dam.waterme.PlantDetailsActivity::class.java)
+
+            // Passar os dados para a outra página
+            intent.putExtra("PLANT_ID", plant.id)
+            intent.putExtra("PLANT_NAME", plant.name)
+            intent.putExtra("PLANT_DESC", plant.description)
+            intent.putExtra("PLANT_FREQ", plant.waterFrequency)
+            intent.putExtra("PLANT_PHOTO", plant.photoUri)
+            // Precisamos de verificar se o valor é nulo antes de passar, ou passar valor default
+            if (plant.lightLevel != null) {
+                intent.putExtra("PLANT_LIGHT", plant.lightLevel)
+            }
+
+            startActivity(intent)
+        }
         binding.recyclerview.adapter = adapter
         binding.recyclerview.layoutManager = LinearLayoutManager(context)
 

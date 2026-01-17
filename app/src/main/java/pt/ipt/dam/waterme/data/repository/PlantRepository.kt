@@ -18,4 +18,8 @@ class PlantRepository(private val plantDao: PlantDao) {
     suspend fun delete(plant: Plant) {
         plantDao.deletePlant(plant)
     }
+
+    suspend fun deleteById(id: Int) {
+        plantDao.deleteById(id)
+    }
 }

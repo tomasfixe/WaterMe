@@ -5,12 +5,15 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import pt.ipt.dam.waterme.data.dao.PlantDao
+import pt.ipt.dam.waterme.data.dao.PlantLogDao
 import pt.ipt.dam.waterme.data.model.Plant
+import pt.ipt.dam.waterme.data.model.PlantLog
 
-@Database(entities = [Plant::class], version = 1, exportSchema = false)
+@Database(entities = [Plant::class, PlantLog::class], version = 2, exportSchema = false)
 abstract class WaterMeDatabase : RoomDatabase() {
 
     abstract fun plantDao(): PlantDao
+    abstract fun plantLogDao(): PlantLogDao
 
     companion object {
         @Volatile
@@ -22,7 +25,7 @@ abstract class WaterMeDatabase : RoomDatabase() {
                     context.applicationContext,
                     WaterMeDatabase::class.java,
                     "waterme_database"
-                ).fallbackToDestructiveMigration() // Apaga a BD se mudares a estrutura (bom para dev)
+                ).fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

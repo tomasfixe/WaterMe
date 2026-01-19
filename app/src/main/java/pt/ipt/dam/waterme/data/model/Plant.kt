@@ -16,5 +16,5 @@ data class Plant(
     val lightLevel: Float? = null, // Valor do sensor de luz
     val latitude: Double? = null,
     val longitude: Double? = null,
-    val synced: Boolean = false // Para sabermos se já foi enviada para a API
+    val synced: Boolean = false // Para saber se já foi enviada para a API
 )

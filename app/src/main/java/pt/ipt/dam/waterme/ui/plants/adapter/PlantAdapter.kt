@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView
 import pt.ipt.dam.waterme.R
 import pt.ipt.dam.waterme.data.model.Plant
 
-// Adicionámos 'onPlantClick' ao construtor
 class PlantAdapter(private val onPlantClick: (Plant) -> Unit) :
     ListAdapter<Plant, PlantAdapter.PlantViewHolder>(PlantComparator()) {
 

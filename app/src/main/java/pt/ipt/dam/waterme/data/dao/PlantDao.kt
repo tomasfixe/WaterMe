@@ -16,7 +16,7 @@ interface PlantDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlant(plant: Plant)
 
-    // Atualizar planta (ex: quando regas)
+    // Atualizar planta
     @Update
     suspend fun updatePlant(plant: Plant)
 
@@ -27,11 +27,15 @@ interface PlantDao {
     @Query("DELETE FROM plants WHERE id = :plantId")
     suspend fun deleteById(plantId: Int)
 
-    // Ler todas as plantas (LiveData atualiza a lista automaticamente)
+    // Ler todas as plantas
     @Query("SELECT * FROM plants ORDER BY nextWateringDate ASC")
     fun getAllPlants(): LiveData<List<Plant>>
 
     // Ler uma planta específica pelo ID
     @Query("SELECT * FROM plants WHERE id = :plantId")
     suspend fun getPlantById(plantId: Int): Plant?
+
+    // Atualizar a data de última regagem
+    @Query("UPDATE plants SET lastWateredDate = :last, nextWateringDate = :next WHERE id = :id")
+    suspend fun updateWateringDates(id: Int, last: Long, next: Long)
 }

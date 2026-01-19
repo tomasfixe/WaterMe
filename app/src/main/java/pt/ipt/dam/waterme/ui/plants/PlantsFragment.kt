@@ -35,7 +35,7 @@ class PlantsFragment : Fragment() {
 
         // Configurar a lista
         val adapter = PlantAdapter { plant ->
-            // Código que corre quando clicas numa planta
+            // Código que corre quando clica numa planta
             val intent = android.content.Intent(requireContext(), pt.ipt.dam.waterme.PlantDetailsActivity::class.java)
 
             // Passar os dados para a outra página

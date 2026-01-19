@@ -1,4 +1,4 @@
-package pt.ipt.dam.waterme // Confirma se este package é igual ao do MainActivity
+package pt.ipt.dam.waterme
 
 import android.content.Intent
 import android.os.Bundle

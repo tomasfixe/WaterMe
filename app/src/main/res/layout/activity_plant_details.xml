@@ -105,6 +105,29 @@
             </GridLayout>
 
             <Button
+                android:id="@+id/btnWaterNow"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="32dp"
+                android:text="REGUEI HOJE"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:backgroundTint="#2196F3"
+                app:cornerRadius="30dp"
+                app:icon="@android:drawable/ic_menu_today"
+                app:iconGravity="textStart" />
+
+            <Button
+                android:id="@+id/btnEditPlant"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:backgroundTint="#FFA000"
+                android:text="Editar Planta"
+                android:textColor="@android:color/white"
+                app:icon="@android:drawable/ic_menu_edit" />
+
+            <Button
                 android:id="@+id/btnDeletePlant"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -1,47 +1,84 @@
 package pt.ipt.dam.waterme.data.repository
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import pt.ipt.dam.waterme.data.dao.PlantDao
 import pt.ipt.dam.waterme.data.dao.PlantLogDao
 import pt.ipt.dam.waterme.data.model.Plant
-import pt.ipt.dam.waterme.data.model.PlantLog
+import pt.ipt.dam.waterme.data.model.PlantRequest
+import pt.ipt.dam.waterme.data.network.RetrofitClient
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
+class PlantRepository(
+    private val plantDao: PlantDao,
+    private val plantLogDao: PlantLogDao,
+    private val context: Context
+) {
 
-class PlantRepository(private val plantDao: PlantDao, private val plantLogDao: PlantLogDao) {
-
-    // A lista de todas as plantas (atualiza automaticamente)
     val allPlants: LiveData<List<Plant>> = plantDao.getAllPlants()
+    private val api = RetrofitClient.api
 
-    // Função para inserir (chamada pelo ViewModel)
+    // GUARDAR
     suspend fun insert(plant: Plant) {
+        // 1. Guarda no telemóvel
         plantDao.insertPlant(plant)
+
+        // 2. Tenta enviar para a API
+        try {
+
+
+            val request = PlantRequest(
+                userId = 1,
+                name = plant.name,
+                description = plant.description ?: "",
+                photoUrl = "",
+                nextWatering = convertLongToDate(plant.nextWateringDate),
+                lastWatering = convertLongToDate(plant.lastWateredDate ?: System.currentTimeMillis())
+            )
+            api.addPlant(request)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    // Função para apagar
-    suspend fun delete(plant: Plant) {
-        plantDao.deletePlant(plant)
+    // ATUALIZAR
+    suspend fun update(plant: Plant) {
+        plantDao.updatePlant(plant) // Atualiza localmente com a foto
+        try {
+            val request = PlantRequest(
+                userId = 1,
+                name = plant.name,
+                description = plant.description ?: "",
+                photoUrl = "",
+                nextWatering = convertLongToDate(plant.nextWateringDate),
+                lastWatering = convertLongToDate(plant.lastWateredDate ?: System.currentTimeMillis())
+            )
+            api.updatePlant(plant.id, request)
+        } catch (e: Exception) { e.printStackTrace() }
     }
 
+    // APAGAR
     suspend fun deleteById(id: Int) {
         plantDao.deleteById(id)
+        try {
+            api.deletePlant(id)
+        } catch (e: Exception) { e.printStackTrace() }
     }
 
+    // REGA
     suspend fun waterPlant(plantId: Int, frequencyInDays: Int) {
         val now = System.currentTimeMillis()
-        // Calcula a próxima data (dias * 24h * 60m * 60s * 1000ms)
         val next = now + (frequencyInDays.toLong() * 86400000L)
-
-        // 1. Atualizar a planta
         plantDao.updateWateringDates(plantId, now, next)
-
-        // 2. Criar o log
-        val log = PlantLog(plantId = plantId, date = now)
-
-
-        plantLogDao.insertLog(log)
     }
 
-    suspend fun update(plant: Plant) {
-        plantDao.updatePlant(plant)
+    // Função auxiliar de data
+    private fun convertLongToDate(timestamp: Long): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        return sdf.format(Date(timestamp))
     }
+
+
 }

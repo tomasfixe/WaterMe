@@ -32,7 +32,7 @@ class PlantDetailsActivity : AppCompatActivity() {
 
         // 2. Base de Dados
         val db = WaterMeDatabase.getDatabase(this)
-        val repo = PlantRepository(db.plantDao(), db.plantLogDao())
+        val repo = PlantRepository(db.plantDao(), db.plantLogDao(), applicationContext)
 
         // 3. Preencher UI
         binding.tvDetailName.text = name

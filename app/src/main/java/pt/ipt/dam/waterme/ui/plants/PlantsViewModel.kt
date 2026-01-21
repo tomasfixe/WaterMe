@@ -18,7 +18,7 @@ class PlantsViewModel(application: Application) : AndroidViewModel(application) 
     init {
         val database = WaterMeDatabase.getDatabase(application)
 
-        repository = PlantRepository(database.plantDao(), database.plantLogDao())
+        repository = PlantRepository(database.plantDao(), database.plantLogDao(), application)
 
         allPlants = repository.allPlants
     }

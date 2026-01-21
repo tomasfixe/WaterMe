@@ -79,7 +79,8 @@ class AddPlantActivity : AppCompatActivity(), SensorEventListener {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
         val database = WaterMeDatabase.getDatabase(this)
-        val repository = PlantRepository(database.plantDao(), database.plantLogDao())
+        // Adicionámos 'applicationContext' como 3º argumento
+        val repository = PlantRepository(database.plantDao(), database.plantLogDao(), applicationContext)
 
         // --- LÓGICA DE EDIÇÃO ---
         checkEditMode()

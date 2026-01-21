@@ -14,7 +14,7 @@ interface PlantDao {
 
     // Adicionar planta
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPlant(plant: Plant)
+    suspend fun insertPlant(plant: Plant): Long
 
     // Atualizar planta
     @Update

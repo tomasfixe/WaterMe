@@ -1,12 +1,12 @@
 package pt.ipt.dam.waterme.data.network
 
-import pt.ipt.dam.waterme.data.model.PlantRequest
-import pt.ipt.dam.waterme.data.model.PlantResponse
+import pt.ipt.dam.waterme.data.model.* // Importa tudo
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
 interface WaterMeApiService {
+
 
     @GET("plants/{user_id}")
     suspend fun getPlants(@Path("user_id") userId: Int): List<PlantResponse>
@@ -19,6 +19,13 @@ interface WaterMeApiService {
 
     @DELETE("plants/{id}")
     suspend fun deletePlant(@Path("id") id: Int)
+
+
+    @POST("auth/login")
+    suspend fun login(@Body request: LoginRequest): LoginResponse
+
+    @POST("auth/register")
+    suspend fun register(@Body request: RegisterRequest): RegisterResponse
 }
 
 object RetrofitClient {

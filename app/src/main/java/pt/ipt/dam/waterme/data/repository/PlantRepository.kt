@@ -19,14 +19,14 @@ class PlantRepository(
     context: Context
 ) {
 
-    // 1. Obter o ID do utilizador que fez login
+    // Obter o ID do utilizador que fez login
     private val sessionManager = SessionManager(context)
     private val currentUserId = sessionManager.fetchUserId() // Se for -1, algo correu mal no login
 
     val allPlants: LiveData<List<Plant>> = plantDao.getAllPlants()
     private val api = RetrofitClient.api
 
-    // --- GUARDAR (Insert com Correção de ID) ---
+    // --- GUARDAR
     suspend fun insert(plant: Plant) {
         try {
             // Preparar dados para a API
@@ -36,7 +36,9 @@ class PlantRepository(
                 description = plant.description ?: "",
                 photoUrl = "",
                 nextWatering = convertLongToDate(plant.nextWateringDate),
-                lastWatering = convertLongToDate(plant.lastWateredDate ?: System.currentTimeMillis())
+                lastWatering = convertLongToDate(plant.lastWateredDate ?: System.currentTimeMillis()),
+                lightLevel = plant.lightLevel
+
             )
 
             // Enviar para a API e esperar pelo ID oficial
@@ -71,7 +73,8 @@ class PlantRepository(
                 description = plant.description ?: "",
                 photoUrl = "",
                 nextWatering = convertLongToDate(plant.nextWateringDate),
-                lastWatering = convertLongToDate(plant.lastWateredDate ?: System.currentTimeMillis())
+                lastWatering = convertLongToDate(plant.lastWateredDate ?: System.currentTimeMillis()),
+                lightLevel = plant.lightLevel
             )
 
             api.updatePlant(plant.id, request)

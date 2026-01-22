@@ -39,7 +39,8 @@ def create_tables():
                 description TEXT,
                 photo_url TEXT,
                 last_watering TEXT,
-                next_watering TEXT
+                next_watering TEXT,
+                light_level REAL
             );
         """)
         conn.commit()
@@ -53,6 +54,23 @@ create_tables()
 @app.route('/')
 def home():
     return "Water Me API"
+
+# --- ROTA TEMPORÁRIA PARA ATUALIZAR A BD ---
+
+@app.route('/update_db_light', methods=['GET'])
+def update_db_light():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        # Cria a coluna se ela não existir
+        cur.execute("ALTER TABLE plants ADD COLUMN IF NOT EXISTS light_level REAL;")
+        conn.commit()
+        cur.close()
+        conn.close()
+        return "Sucesso! Coluna light_level criada.", 200
+    except Exception as e:
+        return f"Erro: {e}", 500
+
 
 # 1. REGISTAR USER
 @app.route('/auth/register', methods=['POST'])
@@ -95,10 +113,17 @@ def add_plant():
     cur = conn.cursor()
     try:
         cur.execute("""
-            INSERT INTO plants (user_id, name, description, photo_url, last_watering, next_watering)
-            VALUES (%s, %s, %s, %s, %s, %s) RETURNING id;
-        """, (data['user_id'], data['name'], data.get('description', ''), data.get('photo_url', ''),
-              data.get('last_watering', datetime.now().isoformat()), data['next_watering']))
+            INSERT INTO plants (user_id, name, description, photo_url, last_watering, next_watering, light_level)
+            VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;
+        """, (
+            data['user_id'],
+            data['name'],
+            data.get('description', ''),
+            data.get('photo_url', ''),
+            data.get('last_watering', datetime.now().isoformat()),
+            data['next_watering'],
+            data.get('light_level', 0.0) # <--- NOVO (Padrão é 0.0)
+        ))
         new_id = cur.fetchone()[0]
         conn.commit()
         return jsonify({"id": new_id, "message": "Guardado!"}), 201
@@ -112,6 +137,7 @@ def add_plant():
 def get_plants(user_id):
     conn = get_db_connection()
     cur = conn.cursor()
+    # SELECT * busca automaticamente a nova coluna light_level
     cur.execute("SELECT * FROM plants WHERE user_id = %s ORDER BY id DESC;", (user_id,))
     cols = [desc[0] for desc in cur.description]
     results = [dict(zip(cols, row)) for row in cur.fetchall()]
@@ -138,7 +164,7 @@ def update_plant(plant_id):
         # Atualiza apenas os campos desta planta específica
         cur.execute("""
             UPDATE plants
-            SET name = %s, description = %s, photo_url = %s, next_watering = %s, last_watering = %s
+            SET name = %s, description = %s, photo_url = %s, next_watering = %s, last_watering = %s, light_level = %s
             WHERE id = %s;
         """, (
             data['name'],
@@ -146,6 +172,7 @@ def update_plant(plant_id):
             data.get('photo_url', ''),
             data['next_watering'],
             data.get('last_watering', datetime.now().isoformat()),
+            data.get('light_level', 0.0), # <--- NOVO
             plant_id
         ))
         conn.commit()
@@ -154,3 +181,6 @@ def update_plant(plant_id):
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close(); conn.close()
+
+if __name__ == '__main__':
+    app.run(debug=True)

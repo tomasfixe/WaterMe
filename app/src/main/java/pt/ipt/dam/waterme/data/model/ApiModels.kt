@@ -31,7 +31,8 @@ data class PlantRequest(
     @SerializedName("description") val description: String,
     @SerializedName("photo_url") val photoUrl: String,
     @SerializedName("next_watering") val nextWatering: String,
-    @SerializedName("last_watering") val lastWatering: String?
+    @SerializedName("last_watering") val lastWatering: String?,
+    @SerializedName("light_level") val lightLevel: Float?
 )
 
 // Receber dados
@@ -42,5 +43,6 @@ data class PlantResponse(
     @SerializedName("description") val description: String?,
     @SerializedName("photo_url") val photoUrl: String?,
     @SerializedName("next_watering") val nextWatering: String?,
-    @SerializedName("last_watering") val lastWatering: String?
+    @SerializedName("last_watering") val lastWatering: String?,
+    @SerializedName("light_level") val lightLevel: Float?
 )

@@ -102,6 +102,30 @@
                         android:textStyle="bold"
                         android:textColor="@android:color/black"/>
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Próxima Rega"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/darker_gray"/>
+
+                    <TextView
+                        android:id="@+id/tvDetailNext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="--/--"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#FF5722"/>
+                </LinearLayout>
+
             </GridLayout>
 
             <Button

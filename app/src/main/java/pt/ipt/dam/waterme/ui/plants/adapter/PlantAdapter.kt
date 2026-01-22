@@ -29,13 +29,23 @@ class PlantAdapter(private val onPlantClick: (Plant) -> Unit) :
     class PlantViewHolder(itemView: View, val onClick: (Plant) -> Unit) : RecyclerView.ViewHolder(itemView) {
         private val plantNameView: TextView = itemView.findViewById(R.id.textViewPlantName)
         private val plantStatusView: TextView = itemView.findViewById(R.id.textViewWaterStatus)
+        // 1. ACHAR O NOVO TEXTO
+        private val nextWateringView: TextView = itemView.findViewById(R.id.textViewNextWatering)
         private val plantImageView: ImageView = itemView.findViewById(R.id.ivPlantItem)
 
         fun bind(plant: Plant) {
             plantNameView.text = plant.name
+
+            // 2. LINHA 1: A Frequência
             plantStatusView.text = "Rega a cada ${plant.waterFrequency} dias"
 
-            // Carregar a foto se existir
+            // 3. LINHA 2: A Data Formatada
+            val sdf = java.text.SimpleDateFormat("dd/MM HH:mm", java.util.Locale.getDefault())
+            val dataFormatada = sdf.format(java.util.Date(plant.nextWateringDate))
+
+            nextWateringView.text = "Próxima: $dataFormatada"
+
+            //
             if (plant.photoUri != null) {
                 try {
                     plantImageView.setImageURI(Uri.parse(plant.photoUri))
@@ -46,7 +56,6 @@ class PlantAdapter(private val onPlantClick: (Plant) -> Unit) :
                 plantImageView.setImageResource(android.R.drawable.ic_menu_gallery)
             }
 
-            // Configurar o clique
             itemView.setOnClickListener {
                 onClick(plant)
             }

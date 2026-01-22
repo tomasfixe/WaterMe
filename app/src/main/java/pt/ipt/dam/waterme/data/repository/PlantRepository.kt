@@ -97,10 +97,28 @@ class PlantRepository(
     }
 
     // REGA
-    suspend fun waterPlant(plantId: Int, frequencyInDays: Int) {
-        val now = System.currentTimeMillis()
-        val next = now + (frequencyInDays.toLong() * 86400000L)
-        plantDao.updateWateringDates(plantId, now, next)
+    // --- REGA INTELIGENTE (Local + API) ---
+    suspend fun waterPlant(plantId: Int) {
+        // Ir buscar a planta atual à base de dados local
+        val plant = plantDao.getPlantById(plantId)
+
+        if (plant != null) {
+            //  Calcular as novas datas
+            val now = System.currentTimeMillis()
+            // Frequencia em dias * 24h * 60min * 60seg * 1000ms
+            val next = now + (plant.waterFrequency.toLong() * 86400000L)
+
+            // Criar uma cópia da planta com as datas novas
+            val updatedPlant = plant.copy(
+                lastWateredDate = now,
+                nextWateringDate = next
+            )
+
+            // 4. Chamar a função de update
+            update(updatedPlant)
+
+            Log.d("WATER_ACTION", "Planta ${plant.name} regada! Próxima rega: ${convertLongToDate(next)}")
+        }
     }
 
     private fun convertLongToDate(timestamp: Long): String {

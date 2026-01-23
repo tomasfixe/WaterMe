@@ -30,4 +30,9 @@ class PlantsViewModel(application: Application) : AndroidViewModel(application) 
     fun delete(plant: Plant) = viewModelScope.launch(Dispatchers.IO) {
         repository.deleteById(plant.id)
     }
+    fun refreshPlants() {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.refreshPlantsFromApi()
+        }
+    }
 }

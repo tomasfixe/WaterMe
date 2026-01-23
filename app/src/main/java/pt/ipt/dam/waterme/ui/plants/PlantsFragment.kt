@@ -56,6 +56,10 @@ class PlantsFragment : Fragment() {
 
         // Ligar ao ViewModel
         val plantsViewModel = ViewModelProvider(this)[PlantsViewModel::class.java]
+
+        // Isto vai garantir que as plantas do User na API substituem as locais
+        plantsViewModel.refreshPlants()
+
         plantsViewModel.allPlants.observe(viewLifecycleOwner) { plants ->
             adapter.submitList(plants)
         }

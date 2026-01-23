@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import pt.ipt.dam.waterme.data.database.WaterMeDatabase // Import necessário
 import pt.ipt.dam.waterme.data.model.LoginRequest
 import pt.ipt.dam.waterme.data.network.RetrofitClient
 import pt.ipt.dam.waterme.data.session.SessionManager
@@ -16,7 +17,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Verificar se já está logado antes de mostrar o ecrã
         val session = SessionManager(this)
         if (session.isLoggedIn()) {
             startActivity(Intent(this, MainActivity::class.java))
@@ -31,12 +31,10 @@ class LoginActivity : AppCompatActivity() {
         val btnLogin = findViewById<Button>(R.id.buttonLogin)
         val btnRegister = findViewById<Button>(R.id.buttonRegister)
 
-        // Botão para ir para o ecrã de Registo
         btnRegister.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
 
-        // Botão de Login
         btnLogin.setOnClickListener {
             val email = etEmail.text.toString()
             val pass = etPass.text.toString()
@@ -51,18 +49,23 @@ class LoginActivity : AppCompatActivity() {
                     val request = LoginRequest(email, pass)
                     val response = RetrofitClient.api.login(request)
 
-                    // SUCESSO
                     // 1. Guardar na sessão
                     session.saveUserSession(response.user_id, response.name)
 
-                    // 2. Ir para a App
+                    // Apagar dados antigos do utilizador anterior
+                    val db = WaterMeDatabase.getDatabase(this@LoginActivity)
+
+
+                    db.plantDao().deleteAll()
+
+                    // 3. Ir para a App
                     Toast.makeText(this@LoginActivity, "Bem-vindo, ${response.name}!", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     finish()
 
                 } catch (e: Exception) {
-                    // ERRO (Senha errada ou erro de rede)
                     Toast.makeText(this@LoginActivity, "Login falhou! Verifica os dados.", Toast.LENGTH_SHORT).show()
+                    e.printStackTrace()
                 }
             }
         }

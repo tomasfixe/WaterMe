@@ -24,6 +24,9 @@ interface PlantDao {
     @Delete
     suspend fun deletePlant(plant: Plant)
 
+    @Query("DELETE FROM plants")
+    suspend fun deleteAll()
+
     @Query("DELETE FROM plants WHERE id = :plantId")
     suspend fun deleteById(plantId: Int)
 
@@ -38,6 +41,8 @@ interface PlantDao {
     // Atualizar a data de última regagem
     @Query("UPDATE plants SET lastWateredDate = :last, nextWateringDate = :next WHERE id = :id")
     suspend fun updateWateringDates(id: Int, last: Long, next: Long)
+
+
 
 
     // Retorna uma lista direta (não LiveData) para o Worker usar

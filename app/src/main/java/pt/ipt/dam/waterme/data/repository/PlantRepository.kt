@@ -26,6 +26,44 @@ class PlantRepository(
     val allPlants: LiveData<List<Plant>> = plantDao.getAllPlants()
     private val api = RetrofitClient.api
 
+    // SICRONIZAR
+
+    suspend fun refreshPlantsFromApi() {
+        if (currentUserId == -1) return
+
+        try {
+            // 1. Buscar lista à API
+            val remotePlants = api.getPlants(currentUserId)
+
+            // 2. Se a API trouxer dados, limpamos o local para garantir que é igual
+            // (Isto remove as "plantas fantasma" de testes anteriores)
+            plantDao.deleteAll()
+
+            // 3. Guardar tudo o que veio da net no telemóvel
+            for (apiPlant in remotePlants) {
+                // Converter String da API para Long
+                val lastWatering = convertDateToLong(apiPlant.lastWatering)
+                val nextWatering = convertDateToLong(apiPlant.nextWatering)
+
+                val localPlant = Plant(
+                    id = apiPlant.id,
+                    name = apiPlant.name,
+                    description = apiPlant.description,
+                    photoUri = apiPlant.photoUrl,
+                    waterFrequency = 7, // Valor padrão (ajustar se a API passar a enviar isto)
+                    lastWateredDate = lastWatering,
+                    nextWateringDate = nextWatering,
+                    lightLevel = apiPlant.lightLevel
+                )
+                plantDao.insertPlant(localPlant)
+            }
+            Log.d("SYNC", "Sincronização completa. ${remotePlants.size} plantas carregadas.")
+
+        } catch (e: Exception) {
+            Log.e("SYNC", "Erro ao sincronizar: ${e.message}")
+        }
+    }
+
     // --- GUARDAR
     suspend fun insert(plant: Plant) {
         try {
@@ -97,7 +135,7 @@ class PlantRepository(
     }
 
     // REGA
-    // --- REGA INTELIGENTE (Local + API) ---
+    //  (Local + API)
     suspend fun waterPlant(plantId: Int) {
         // Ir buscar a planta atual à base de dados local
         val plant = plantDao.getPlantById(plantId)
@@ -124,5 +162,14 @@ class PlantRepository(
     private fun convertLongToDate(timestamp: Long): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
         return sdf.format(Date(timestamp))
+    }
+    private fun convertDateToLong(dateString: String?): Long {
+        if (dateString.isNullOrEmpty()) return System.currentTimeMillis()
+        return try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            sdf.parse(dateString)?.time ?: System.currentTimeMillis()
+        } catch (e: Exception) {
+            System.currentTimeMillis()
+        }
     }
 }

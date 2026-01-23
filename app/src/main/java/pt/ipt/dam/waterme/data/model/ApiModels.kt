@@ -23,6 +23,11 @@ data class RegisterResponse(
     val id: Int,
     val message: String
 )
+data class ChangePasswordRequest(
+    @SerializedName("user_id") val userId: Int,
+    @SerializedName("old_password") val oldPass: String,
+    @SerializedName("new_password") val newPass: String
+)
 
 // Enviar dados
 data class PlantRequest(

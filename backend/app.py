@@ -184,3 +184,37 @@ def update_plant(plant_id):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+# 7. MUDAR PASSWORD
+@app.route('/auth/change-password', methods=['PUT'])
+def change_password():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    old_pass = data.get('old_password')
+    new_pass = data.get('new_password')
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # 1. Buscar a password atual
+    cur.execute("SELECT password FROM users WHERE id = %s;", (user_id,))
+    user = cur.fetchone()
+
+    if not user:
+        cur.close(); conn.close()
+        return jsonify({"error": "Utilizador não encontrado"}), 404
+
+    stored_hash = user[0]
+
+    # 2. Verificar se a password antiga bate certo
+    if bcrypt.checkpw(old_pass.encode('utf-8'), stored_hash.encode('utf-8')):
+        # 3. Criar hash da nova password e guardar
+        new_hashed = bcrypt.hashpw(new_pass.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        cur.execute("UPDATE users SET password = %s WHERE id = %s;", (new_hashed, user_id))
+        conn.commit()
+        cur.close(); conn.close()
+        return jsonify({"message": "Senha alterada com sucesso!"}), 200
+
+    else:
+        cur.close(); conn.close()
+        return jsonify({"error": "A senha atual está errada."}), 401

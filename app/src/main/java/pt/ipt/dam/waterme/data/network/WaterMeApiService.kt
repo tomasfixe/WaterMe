@@ -1,6 +1,7 @@
 package pt.ipt.dam.waterme.data.network
 
-import pt.ipt.dam.waterme.data.model.* // Importa tudo
+import pt.ipt.dam.waterme.data.model.*
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
@@ -26,6 +27,9 @@ interface WaterMeApiService {
 
     @POST("auth/register")
     suspend fun register(@Body request: RegisterRequest): RegisterResponse
+
+    @PUT("/auth/change-password")
+    suspend fun changePassword(@Body request: ChangePasswordRequest): Response<Map<String, String>>
 }
 
 object RetrofitClient {

@@ -25,6 +25,11 @@ class SessionManager(context: Context) {
         return prefs.getBoolean("IS_LOGGED_IN", false)
     }
 
+
+    fun fetchUserName(): String? {
+        return prefs.getString("USER_NAME", null)
+    }
+
     // Logout (Limpar dados)
     fun logout() {
         val editor = prefs.edit()

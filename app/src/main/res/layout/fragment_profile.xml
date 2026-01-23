@@ -1,22 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.profile.ProfileFragment">
+    android:background="#F5F5F5"
+    android:padding="24dp">
 
-    <TextView
-        android:id="@+id/text_dashboard"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@android:drawable/sym_def_app_icon"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvProfileHello"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Olá, Utilizador"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="32dp"/>
+
+        <Button
+            android:id="@+id/btnToggleChangePass"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Alterar Palavra-Passe"
+            android:backgroundTint="#2196F3"
+            android:textSize="16sp"/>
+
+        <LinearLayout
+            android:id="@+id/layoutChangePassContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/white"
+            android:padding="16dp"
+            android:visibility="gone"> <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Senha Atual"
+            android:textStyle="bold"/>
+            <EditText
+                android:id="@+id/etCurrentPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="****"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nova Senha"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"/>
+            <EditText
+                android:id="@+id/etNewPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="Nova Senha"/>
+
+            <EditText
+                android:id="@+id/etConfirmNewPass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:hint="Repetir Nova Senha"/>
+
+            <Button
+                android:id="@+id/btnSavePassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Gravar Nova Senha"
+                android:backgroundTint="#4CAF50"
+                android:layout_marginTop="16dp"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sair da Conta"
+            android:backgroundTint="#D32F2F"
+            android:layout_marginTop="32dp"/>
+
+    </LinearLayout>
+</ScrollView>

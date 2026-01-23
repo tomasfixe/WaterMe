@@ -93,14 +93,6 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Escala: 0 (Escuro) a 1000+ (Muito Claro)"
-            android:textSize="12sp"
-            android:textColor="@android:color/darker_gray"
-            android:layout_marginBottom="8dp"/>
-
         <Button
             android:id="@+id/btnSavePlant"
             android:layout_width="match_parent"

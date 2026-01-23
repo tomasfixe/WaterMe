@@ -11,7 +11,11 @@ interface PlantLogDao {
     @Insert
     suspend fun insertLog(log: PlantLog)
 
-    // Buscar logs de uma planta específica
+    // Buscar logs
     @Query("SELECT * FROM plant_logs WHERE plantId = :plantId ORDER BY date DESC")
     fun getLogsForPlant(plantId: Int): LiveData<List<PlantLog>>
+
+    // Buscar lista
+    @Query("SELECT * FROM plant_logs WHERE plantId = :plantId ORDER BY date DESC")
+    suspend fun getLogsList(plantId: Int): List<PlantLog>
 }

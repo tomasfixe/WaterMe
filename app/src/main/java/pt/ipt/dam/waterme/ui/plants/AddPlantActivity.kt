@@ -178,8 +178,24 @@ class AddPlantActivity : AppCompatActivity(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent?) {
         if (event?.sensor?.type == Sensor.TYPE_LIGHT) {
             val luxValue = event.values[0]
-            currentLightLevel = luxValue
-            tvLightInfo.text = "Luz: $luxValue lx"
+
+            // --- ESCALA 1-10 ---
+            // Consideramos que 1000 lux já é "Brilho Máximo" (10) para interior
+            // A função coerceIn(1, 10) garante que o valor nunca é inferior a 1 nem superior a 10
+            val scaleValue = (luxValue / 100).toInt().coerceIn(1, 10)
+
+            // Guardamos o valor da escala (1 a 10) em vez do valor bruto
+            currentLightLevel = scaleValue.toFloat()
+
+            // Atualizar texto no ecrã para o utilizador perceber
+            tvLightInfo.text = "Luminosidade: Nível $scaleValue/10"
+
+            // Dica visual (opcional): mudar a cor se for muito escuro
+            if (scaleValue <= 2) {
+                tvLightInfo.setTextColor(android.graphics.Color.RED)
+            } else {
+                tvLightInfo.setTextColor(android.graphics.Color.WHITE)
+            }
         }
     }
 

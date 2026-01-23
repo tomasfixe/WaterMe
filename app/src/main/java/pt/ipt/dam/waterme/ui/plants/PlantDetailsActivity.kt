@@ -2,6 +2,7 @@ package pt.ipt.dam.waterme
 
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -9,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import pt.ipt.dam.waterme.data.database.WaterMeDatabase
+import pt.ipt.dam.waterme.data.model.PlantLog
 import pt.ipt.dam.waterme.data.repository.PlantRepository
 import pt.ipt.dam.waterme.databinding.ActivityPlantDetailsBinding
 import java.text.SimpleDateFormat
@@ -34,7 +36,7 @@ class PlantDetailsActivity : AppCompatActivity() {
         val photoUri = intent.getStringExtra("PLANT_PHOTO")
         var nextWatering = intent.getLongExtra("PLANT_NEXT", 0L)
 
-        // 2. Setup
+        // 2. Setup DB e Repo
         val db = WaterMeDatabase.getDatabase(this)
         val repo = PlantRepository(db.plantDao(), db.plantLogDao(), applicationContext)
 
@@ -42,23 +44,22 @@ class PlantDetailsActivity : AppCompatActivity() {
         binding.tvDetailName.text = name
         binding.tvDetailFreq.text = "Rega a cada $freq dias"
 
-        // Função auxiliar para mostrar a data bonita
         fun updateDateDisplay(dateMillis: Long) {
             val sdf = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault())
             val dateStr = sdf.format(Date(dateMillis))
             binding.tvDetailNext.text = "Próxima: $dateStr"
         }
-
-        // Mostrar a data inicial
         if (nextWatering > 0) updateDateDisplay(nextWatering)
 
-        // Descrição
         binding.tvDetailDesc.text = if (desc.isNullOrEmpty()) "Sem descrição." else desc
-
-        // Luz
-        binding.tvDetailLight.text = if (light >= 0) "$light lx" else "N/A"
-
-        // Foto
+        // Luz (Mostrar em escala)
+        if (light >= 0) {
+            // Convertemos para inteiro para não aparecer "5.0/10"
+            val level = light.toInt()
+            binding.tvDetailLight.text = "Nível $level/10"
+        } else {
+            binding.tvDetailLight.text = "Não medida"
+        }
         if (!photoUri.isNullOrEmpty()) {
             try {
                 binding.ivDetailPhoto.setImageURI(Uri.parse(photoUri))
@@ -72,22 +73,34 @@ class PlantDetailsActivity : AppCompatActivity() {
             if (plantId == -1) return@setOnClickListener
 
             lifecycleScope.launch(Dispatchers.IO) {
-                // A. Atualizar na BD e API
+                // A. Rega e CRIA O LOG (Agora já funciona!)
                 repo.waterPlant(plantId)
 
-                // B. Calcular a NOVA data para mostrar logo no ecrã sem ter de sair e entrar
                 val now = System.currentTimeMillis()
-                val newNextDate = now + (freq.toLong() * 86400000L) // dias -> ms
+                val newNextDate = now + (freq.toLong() * 86400000L)
 
                 runOnUiThread {
                     Toast.makeText(this@PlantDetailsActivity, "Planta regada! 💧", Toast.LENGTH_SHORT).show()
-                    // Atualiza o texto imediatamente
                     updateDateDisplay(newNextDate)
                 }
             }
         }
 
-        // 5. Botão "Editar"
+        // 5. Botão "Ver Logs" (Adicionei o botão no layout XML ou assume que já lá está)
+        binding.btnViewLogs.setOnClickListener {
+            if (plantId == -1) return@setOnClickListener
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                // Busca a lista de logs
+                val logs = repo.getPlantLogs(plantId)
+
+                runOnUiThread {
+                    showLogsDialog(logs)
+                }
+            }
+        }
+
+        // 6. Botão Editar
         binding.btnEditPlant.setOnClickListener {
             val intent = android.content.Intent(this, AddPlantActivity::class.java)
             intent.putExtra("IS_EDIT_MODE", true)
@@ -101,7 +114,7 @@ class PlantDetailsActivity : AppCompatActivity() {
             finish()
         }
 
-        // 6. Botão "Apagar"
+        // 7. Botão Apagar
         binding.btnDeletePlant.setOnClickListener {
             if (plantId == -1) return@setOnClickListener
             AlertDialog.Builder(this)
@@ -110,13 +123,30 @@ class PlantDetailsActivity : AppCompatActivity() {
                 .setPositiveButton("Sim") { _, _ ->
                     lifecycleScope.launch(Dispatchers.IO) {
                         repo.deleteById(plantId)
-                        runOnUiThread {
-                            finish()
-                        }
+                        runOnUiThread { finish() }
                     }
                 }
                 .setNegativeButton("Não", null)
                 .show()
         }
+    }
+
+    // Função para mostrar o popup com a lista
+    private fun showLogsDialog(logs: List<PlantLog>) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Histórico de Regas 📅")
+
+        if (logs.isEmpty()) {
+            builder.setMessage("Esta planta ainda não foi regada.")
+        } else {
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy 'às' HH:mm", Locale.getDefault())
+            val logsAsStrings = logs.map { log ->
+                "💧 ${dateFormat.format(Date(log.date))}"
+            }.toTypedArray()
+
+            builder.setItems(logsAsStrings, null)
+        }
+        builder.setPositiveButton("Fechar", null)
+        builder.show()
     }
 }

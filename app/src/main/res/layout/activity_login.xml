@@ -49,4 +49,16 @@
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_marginBottom="32dp"/>
 
+    <TextView
+        android:id="@+id/tvAboutUs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sobre Nós"
+        android:textSize="14sp"
+        android:textColor="#2196F3"
+        android:layout_gravity="center"
+        android:layout_marginTop="24dp"
+        android:padding="8dp"
+        android:textStyle="bold"/>
+
 </LinearLayout>

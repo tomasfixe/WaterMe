@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -59,15 +60,31 @@ class LoginActivity : AppCompatActivity() {
                     db.plantDao().deleteAll()
 
                     // 3. Ir para a App
-                    Toast.makeText(this@LoginActivity, "Bem-vindo, ${response.name}!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Bem-vindo, ${response.name}!",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     finish()
 
                 } catch (e: Exception) {
-                    Toast.makeText(this@LoginActivity, "Login falhou! Verifica os dados.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@LoginActivity,
+                        "Login falhou! Verifica os dados.",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     e.printStackTrace()
                 }
             }
+        }
+
+        // Lógica do botão Sobre
+        val tvAbout =
+            findViewById<TextView>(R.id.tvAboutUs) // Certifica-te que importaste a TextView
+        tvAbout.setOnClickListener {
+            val intent = android.content.Intent(this, AboutActivity::class.java)
+            startActivity(intent)
         }
     }
 }

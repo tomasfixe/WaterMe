@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import pt.ipt.dam.waterme.data.dao.PlantDao
 import pt.ipt.dam.waterme.data.dao.PlantLogDao
 import pt.ipt.dam.waterme.data.model.Plant
+import pt.ipt.dam.waterme.data.model.PlantLog
 import pt.ipt.dam.waterme.data.model.PlantRequest
 import pt.ipt.dam.waterme.data.network.RetrofitClient
 import pt.ipt.dam.waterme.data.session.SessionManager // Importante!
@@ -137,27 +138,28 @@ class PlantRepository(
     // REGA
     //  (Local + API)
     suspend fun waterPlant(plantId: Int) {
-        // Ir buscar a planta atual à base de dados local
         val plant = plantDao.getPlantById(plantId)
 
         if (plant != null) {
-            //  Calcular as novas datas
             val now = System.currentTimeMillis()
-            // Frequencia em dias * 24h * 60min * 60seg * 1000ms
             val next = now + (plant.waterFrequency.toLong() * 86400000L)
 
-            // Criar uma cópia da planta com as datas novas
+            // Atualiza a planta
             val updatedPlant = plant.copy(
                 lastWateredDate = now,
                 nextWateringDate = next
             )
-
-            // 4. Chamar a função de update
             update(updatedPlant)
 
-            Log.d("WATER_ACTION", "Planta ${plant.name} regada! Próxima rega: ${convertLongToDate(next)}")
+            // NOVO: Cria o Log na BD
+            val logEntry = PlantLog(plantId = plantId, date = now)
+            plantLogDao.insertLog(logEntry)
+
+            Log.d("WATER_ACTION", "Planta regada e log criado!")
         }
     }
+
+
 
     private fun convertLongToDate(timestamp: Long): String {
         val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
@@ -172,4 +174,10 @@ class PlantRepository(
             System.currentTimeMillis()
         }
     }
+
+    // Função para buscar o histórico de uma planta
+    suspend fun getPlantLogs(plantId: Int): List<PlantLog> {
+        return plantLogDao.getLogsList(plantId)
+    }
+
 }

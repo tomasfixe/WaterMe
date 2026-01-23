@@ -142,6 +142,17 @@
                 app:iconGravity="textStart" />
 
             <Button
+                android:id="@+id/btnViewLogs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Ver Histórico de Regas"
+                android:backgroundTint="#673AB7"
+                android:textColor="@android:color/white"
+                app:icon="@android:drawable/ic_menu_my_calendar"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"/>
+
+            <Button
                 android:id="@+id/btnEditPlant"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

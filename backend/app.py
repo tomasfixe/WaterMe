@@ -40,7 +40,8 @@ def create_tables():
                 photo_url TEXT,
                 last_watering TEXT,
                 next_watering TEXT,
-                light_level REAL
+                light_level REAL,
+                water_frequency INTEGER DEFAULT 3  -- CORRIGIDO: Falta vírgula na linha anterior no teu código
             );
         """)
         conn.commit()
@@ -55,19 +56,18 @@ create_tables()
 def home():
     return "Water Me API"
 
-# --- ROTA TEMPORÁRIA PARA ATUALIZAR A BD ---
-
-@app.route('/update_db_light', methods=['GET'])
-def update_db_light():
+# ATUALIZAR A BD
+@app.route('/update_db_freq', methods=['GET'])
+def update_db_freq():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
         # Cria a coluna se ela não existir
-        cur.execute("ALTER TABLE plants ADD COLUMN IF NOT EXISTS light_level REAL;")
+        cur.execute("ALTER TABLE plants ADD COLUMN IF NOT EXISTS water_frequency INTEGER DEFAULT 3;")
         conn.commit()
         cur.close()
         conn.close()
-        return "Sucesso! Coluna light_level criada.", 200
+        return "Sucesso! Coluna water_frequency criada.", 200
     except Exception as e:
         return f"Erro: {e}", 500
 
@@ -113,8 +113,8 @@ def add_plant():
     cur = conn.cursor()
     try:
         cur.execute("""
-            INSERT INTO plants (user_id, name, description, photo_url, last_watering, next_watering, light_level)
-            VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;
+            INSERT INTO plants (user_id, name, description, photo_url, last_watering, next_watering, light_level, water_frequency)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id;
         """, (
             data['user_id'],
             data['name'],
@@ -122,7 +122,8 @@ def add_plant():
             data.get('photo_url', ''),
             data.get('last_watering', datetime.now().isoformat()),
             data['next_watering'],
-            data.get('light_level', 0.0) # <--- NOVO (Padrão é 0.0)
+            data.get('light_level', 0.0),
+            data.get('water_frequency', 3) #
         ))
         new_id = cur.fetchone()[0]
         conn.commit()
@@ -137,7 +138,7 @@ def add_plant():
 def get_plants(user_id):
     conn = get_db_connection()
     cur = conn.cursor()
-    # SELECT * busca automaticamente a nova coluna light_level
+    # SELECT * busca automaticamente a nova coluna
     cur.execute("SELECT * FROM plants WHERE user_id = %s ORDER BY id DESC;", (user_id,))
     cols = [desc[0] for desc in cur.description]
     results = [dict(zip(cols, row)) for row in cur.fetchall()]
@@ -161,10 +162,9 @@ def update_plant(plant_id):
     conn = get_db_connection()
     cur = conn.cursor()
     try:
-        # Atualiza apenas os campos desta planta específica
         cur.execute("""
             UPDATE plants
-            SET name = %s, description = %s, photo_url = %s, next_watering = %s, last_watering = %s, light_level = %s
+            SET name = %s, description = %s, photo_url = %s, next_watering = %s, last_watering = %s, light_level = %s, water_frequency = %s
             WHERE id = %s;
         """, (
             data['name'],
@@ -172,7 +172,8 @@ def update_plant(plant_id):
             data.get('photo_url', ''),
             data['next_watering'],
             data.get('last_watering', datetime.now().isoformat()),
-            data.get('light_level', 0.0), # <--- NOVO
+            data.get('light_level', 0.0),
+            data.get('water_frequency', 3), #
             plant_id
         ))
         conn.commit()
@@ -181,9 +182,6 @@ def update_plant(plant_id):
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close(); conn.close()
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 # 7. MUDAR PASSWORD
 @app.route('/auth/change-password', methods=['PUT'])
@@ -218,3 +216,6 @@ def change_password():
     else:
         cur.close(); conn.close()
         return jsonify({"error": "A senha atual está errada."}), 401
+
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -9,7 +9,7 @@ import pt.ipt.dam.waterme.data.model.Plant
 import pt.ipt.dam.waterme.data.model.PlantLog
 import pt.ipt.dam.waterme.data.model.PlantRequest
 import pt.ipt.dam.waterme.data.network.RetrofitClient
-import pt.ipt.dam.waterme.data.session.SessionManager // Importante!
+import pt.ipt.dam.waterme.data.session.SessionManager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -36,8 +36,21 @@ class PlantRepository(
             // 1. Buscar lista à API
             val remotePlants = api.getPlants(currentUserId)
 
+            // BACKUP DAS FOTOS (como não enviamos fotos para a API, estavamos a apgar as fotos)
+            // criar mapa temporário para guardar as fotos locais antes de apagar tudo
+            val photoBackup = mutableMapOf<Int, String?>()
+
+            for (remote in remotePlants) {
+                // Verificamos se já temos esta planta localmente
+                val local = plantDao.getPlantById(remote.id)
+
+                // Se existir localmente e tiver foto, guardamos no backup
+                if (local != null && !local.photoUri.isNullOrEmpty()) {
+                    photoBackup[remote.id] = local.photoUri
+                }
+            }
+
             // 2. Se a API trouxer dados, limpamos o local para garantir que é igual
-            // (Isto remove as "plantas fantasma" de testes anteriores)
             plantDao.deleteAll()
 
             // 3. Guardar tudo o que veio da net no telemóvel
@@ -46,12 +59,15 @@ class PlantRepository(
                 val lastWatering = convertDateToLong(apiPlant.lastWatering)
                 val nextWatering = convertDateToLong(apiPlant.nextWatering)
 
+                val savedPhoto = photoBackup[apiPlant.id]
+                val finalPhoto = if (!savedPhoto.isNullOrEmpty()) savedPhoto else apiPlant.photoUrl
+
                 val localPlant = Plant(
                     id = apiPlant.id,
                     name = apiPlant.name,
                     description = apiPlant.description,
-                    photoUri = apiPlant.photoUrl,
-                    waterFrequency = 7, // Valor padrão (ajustar se a API passar a enviar isto)
+                    photoUri = finalPhoto,
+                    waterFrequency = apiPlant.waterFrequency ?: 3, // Valor padrão
                     lastWateredDate = lastWatering,
                     nextWateringDate = nextWatering,
                     lightLevel = apiPlant.lightLevel
@@ -76,7 +92,8 @@ class PlantRepository(
                 photoUrl = "",
                 nextWatering = convertLongToDate(plant.nextWateringDate),
                 lastWatering = convertLongToDate(plant.lastWateredDate ?: System.currentTimeMillis()),
-                lightLevel = plant.lightLevel
+                lightLevel = plant.lightLevel,
+                waterFrequency = plant.waterFrequency
 
             )
 
@@ -113,7 +130,8 @@ class PlantRepository(
                 photoUrl = "",
                 nextWatering = convertLongToDate(plant.nextWateringDate),
                 lastWatering = convertLongToDate(plant.lastWateredDate ?: System.currentTimeMillis()),
-                lightLevel = plant.lightLevel
+                lightLevel = plant.lightLevel,
+                waterFrequency = plant.waterFrequency
             )
 
             api.updatePlant(plant.id, request)
@@ -151,7 +169,7 @@ class PlantRepository(
             )
             update(updatedPlant)
 
-            // NOVO: Cria o Log na BD
+            // Cria o Log na BD
             val logEntry = PlantLog(plantId = plantId, date = now)
             plantLogDao.insertLog(logEntry)
 

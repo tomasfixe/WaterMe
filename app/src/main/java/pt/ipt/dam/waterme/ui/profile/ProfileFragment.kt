@@ -18,25 +18,38 @@ import pt.ipt.dam.waterme.data.model.ChangePasswordRequest
 import pt.ipt.dam.waterme.data.network.RetrofitClient
 import pt.ipt.dam.waterme.data.session.SessionManager
 
+/**
+ * Fragmento de Perfil do Utilizador.
+ * Este ecrã permite ao utilizador visualizar a sua saudação, alterar a palavra-passe
+ * comunicando com a API, e efetuar o Logout da aplicação.
+ */
 class ProfileFragment : Fragment() {
 
+    /**
+     * Método responsável por criar e inicializar a interface gráfica do fragmento.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        // Inflate do layout XML (fragment_profile.xml)
         val root = inflater.inflate(R.layout.fragment_profile, container, false)
         val context = requireContext()
+
+        // Inicializar o gestor de sessão para aceder aos dados do utilizador logado
         val session = SessionManager(context)
 
-        // 1. Cabeçalho
+        // 1. Cabeçalho (Saudação)
         val tvHello = root.findViewById<TextView>(R.id.tvProfileHello)
+        // Se o nome não estiver na sessão, usa "Utilizador" como fallback
         val userName = session.fetchUserName() ?: "Utilizador"
         tvHello.text = "Olá, $userName"
 
-        // 2. Mostrar/Esconder Password
+        // 2. Lógica para Mostrar/Esconder a área de alterar Password
         val btnToggle = root.findViewById<Button>(R.id.btnToggleChangePass)
         val containerPass = root.findViewById<LinearLayout>(R.id.layoutChangePassContainer)
 
+        // Listener simples para alternar a visibilidade (Toggle)
         btnToggle.setOnClickListener {
             if (containerPass.visibility == View.VISIBLE) {
                 containerPass.visibility = View.GONE
@@ -47,7 +60,7 @@ class ProfileFragment : Fragment() {
             }
         }
 
-        // 3. Mudar Password
+        // 3. Lógica de Mudar Password (Comunicação com API)
         val etCurrent = root.findViewById<EditText>(R.id.etCurrentPass)
         val etNew = root.findViewById<EditText>(R.id.etNewPass)
         val etConfirm = root.findViewById<EditText>(R.id.etConfirmNewPass)
@@ -58,6 +71,7 @@ class ProfileFragment : Fragment() {
             val newPass = etNew.text.toString()
             val confirmPass = etConfirm.text.toString()
 
+            // Validação local dos campos
             if (currentPass.isEmpty() || newPass.isEmpty()) {
                 Toast.makeText(context, "Preenche todos os campos!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -70,22 +84,29 @@ class ProfileFragment : Fragment() {
             lifecycleScope.launch(Dispatchers.IO) {
                 try {
                     val userId = session.fetchUserId()
+                    // Preparar o objeto de pedido (DTO)
                     val request = ChangePasswordRequest(userId, currentPass, newPass)
+
+                    // Chamada à API
                     val response = RetrofitClient.api.changePassword(request)
 
+                    // Voltar à Thread Principal para atualizar a UI
                     withContext(Dispatchers.Main) {
                         if (response.isSuccessful) {
                             Toast.makeText(context, "Senha alterada com sucesso!", Toast.LENGTH_LONG).show()
+                            // Limpar campos e esconder o formulário
                             etCurrent.text.clear()
                             etNew.text.clear()
                             etConfirm.text.clear()
                             containerPass.visibility = View.GONE
                             btnToggle.text = "Alterar Palavra-Passe"
                         } else {
+                            // Se a API retornar erro (ex: 401), provavelmente a senha antiga está errada
                             Toast.makeText(context, "Erro: A senha atual está incorreta.", Toast.LENGTH_LONG).show()
                         }
                     }
                 } catch (e: Exception) {
+                    // Tratar erros de conexão (ex: sem internet)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "Erro de ligação: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
@@ -97,10 +118,15 @@ class ProfileFragment : Fragment() {
         val btnLogout = root.findViewById<Button>(R.id.btnLogout)
         btnLogout.setOnClickListener {
 
-
+            // Limpa os dados da sessão (SharedPreferences)
             session.logout()
 
+            // Redireciona para o LoginActivity
             val intent = Intent(activity, LoginActivity::class.java)
+
+            // Flags importantes:
+            // NEW_TASK: Inicia a atividade numa nova pilha.
+            // CLEAR_TASK: Limpa todas as atividades anteriores (impede que o botão "Voltar" regresse ao perfil).
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }

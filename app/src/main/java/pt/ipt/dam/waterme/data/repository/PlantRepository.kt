@@ -24,7 +24,7 @@ class PlantRepository(
     private val sessionManager = SessionManager(context)
     private val currentUserId = sessionManager.fetchUserId() // Se for -1, algo correu mal no login
 
-    val allPlants: LiveData<List<Plant>> = plantDao.getAllPlants()
+    val allPlants: LiveData<List<Plant>> = plantDao.getAllPlants(currentUserId)
     private val api = RetrofitClient.api
 
     // SICRONIZAR
@@ -51,7 +51,8 @@ class PlantRepository(
             }
 
             // 2. Se a API trouxer dados, limpamos o local para garantir que é igual
-            plantDao.deleteAll()
+            plantDao.deleteUserPlants(currentUserId)
+
 
             // 3. Guardar tudo o que veio da net no telemóvel
             for (apiPlant in remotePlants) {
@@ -64,6 +65,7 @@ class PlantRepository(
 
                 val localPlant = Plant(
                     id = apiPlant.id,
+                    userId = currentUserId,
                     name = apiPlant.name,
                     description = apiPlant.description,
                     photoUri = finalPhoto,
@@ -102,14 +104,16 @@ class PlantRepository(
 
             // Agora que temos o ID Real, guardamos no telemóvel
             // O ID que vem do servidor vai ser forçado no Room
-            val finalPlant = plant.copy(id = response.id)
+            val finalPlant = plant.copy(id = response.id, userId = currentUserId)
             plantDao.insertPlant(finalPlant)
 
             Log.d("API_SUCCESS", "Planta criada com ID oficial: ${response.id}")
 
         } catch (e: Exception) {
-            // Se falhar a Internet...
+            // Se falhar a Internet
             Log.e("API_ERRO", "Sem net. A gravar localmente como backup.")
+
+            val offlinePlant = plant.copy(userId = currentUserId)
 
             // Guardar localmente com ID automático só para não perder os dados
             // Mas avisa que este ID vai estar dessincronizado do servidor
@@ -120,7 +124,8 @@ class PlantRepository(
     // ATUALIZAR
     suspend fun update(plant: Plant) {
         // Atualiza localmente
-        plantDao.updatePlant(plant)
+        val safePlant = plant.copy(userId = currentUserId)
+        plantDao.updatePlant(safePlant)
 
         try {
             val request = PlantRequest(
@@ -165,7 +170,8 @@ class PlantRepository(
             // Atualiza a planta
             val updatedPlant = plant.copy(
                 lastWateredDate = now,
-                nextWateringDate = next
+                nextWateringDate = next,
+                userId = currentUserId
             )
             update(updatedPlant)
 

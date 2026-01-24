@@ -7,6 +7,7 @@ import java.util.Date
 @Entity(tableName = "plants")
 data class Plant(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val userId: Int = -1, // Identifica o dono da planta
     val name: String,
     val description: String?,
     val photoUri: String?, // Caminho para a foto no telemóvel

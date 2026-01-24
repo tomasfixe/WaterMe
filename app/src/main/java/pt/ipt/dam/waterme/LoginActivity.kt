@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import pt.ipt.dam.waterme.data.database.WaterMeDatabase // Import necessário
 import pt.ipt.dam.waterme.data.model.LoginRequest
 import pt.ipt.dam.waterme.data.network.RetrofitClient
 import pt.ipt.dam.waterme.data.session.SessionManager
@@ -50,41 +49,25 @@ class LoginActivity : AppCompatActivity() {
                     val request = LoginRequest(email, pass)
                     val response = RetrofitClient.api.login(request)
 
-                    // 1. Guardar na sessão
+                    // 1. Guardar na sessão (Isto é que define quem "vê" as plantas)
                     session.saveUserSession(response.user_id, response.name)
 
-                    // Apagar dados antigos do utilizador anterior
-                    val db = WaterMeDatabase.getDatabase(this@LoginActivity)
 
-
-                    db.plantDao().deleteAll()
-
-                    // 3. Ir para a App
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Bem-vindo, ${response.name}!",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    // 2. Ir para a App
+                    Toast.makeText(this@LoginActivity, "Bem-vindo, ${response.name}!", Toast.LENGTH_SHORT).show()
                     startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                     finish()
 
                 } catch (e: Exception) {
-                    Toast.makeText(
-                        this@LoginActivity,
-                        "Login falhou! Verifica os dados.",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    Toast.makeText(this@LoginActivity, "Login falhou! Verifica os dados.", Toast.LENGTH_SHORT).show()
                     e.printStackTrace()
                 }
             }
         }
 
-        // Lógica do botão Sobre
-        val tvAbout =
-            findViewById<TextView>(R.id.tvAboutUs) // Certifica-te que importaste a TextView
+        val tvAbout = findViewById<TextView>(R.id.tvAboutUs)
         tvAbout.setOnClickListener {
-            val intent = android.content.Intent(this, AboutActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, AboutActivity::class.java))
         }
     }
 }

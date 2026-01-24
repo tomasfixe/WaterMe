@@ -22,6 +22,8 @@
         android:layout_height="wrap_content"
         android:hint="Nome"
         android:inputType="textPersonName"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/darker_gray"
         android:minHeight="48dp"
         android:layout_marginBottom="16dp"/>
 
@@ -31,6 +33,8 @@
         android:layout_height="wrap_content"
         android:hint="Email"
         android:inputType="textEmailAddress"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/darker_gray"
         android:minHeight="48dp"
         android:layout_marginBottom="16dp"/>
 
@@ -40,6 +44,8 @@
         android:layout_height="wrap_content"
         android:hint="Password"
         android:inputType="textPassword"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/darker_gray"
         android:minHeight="48dp"
         android:layout_marginBottom="24dp"/>
 

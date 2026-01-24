@@ -91,7 +91,7 @@
                 <ImageView
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:src="@android:drawable/sym_def_app_icon"
+                    android:src="@drawable/tomas"
                     android:background="@android:drawable/dialog_holo_light_frame"
                     android:layout_marginBottom="8dp"/>
 
@@ -119,7 +119,7 @@
                 <ImageView
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:src="@android:drawable/sym_def_app_icon"
+                    android:src="@drawable/martim"
                     android:background="@android:drawable/dialog_holo_light_frame"
                     android:layout_marginBottom="8dp"/>
 
@@ -157,41 +157,49 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
             android:text="• Linguagem: Kotlin"
             android:textSize="16sp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
             android:text="• UI: XML Layouts &amp; ViewBinding"
             android:textSize="16sp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
             android:text="• Base de Dados: Room (SQLite)"
             android:textSize="16sp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
             android:text="• Rede/API: Retrofit 2 &amp; Gson"
             android:textSize="16sp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
             android:text="• Background: WorkManager"
             android:textSize="16sp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
             android:text="• Arquitetura: MVVM"
             android:textSize="16sp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
             android:text="• Backend: Python (Flask)"
             android:textSize="16sp"/>
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
             android:text="• Hardware: Câmara &amp; Sensores"
             android:textSize="16sp"/>
 
@@ -199,6 +207,7 @@
             android:id="@+id/btnBackFromAbout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
             android:text="Voltar ao Login"
             android:backgroundTint="#2196F3"
             android:layout_marginTop="32dp"

@@ -9,7 +9,7 @@ import pt.ipt.dam.waterme.data.dao.PlantLogDao
 import pt.ipt.dam.waterme.data.model.Plant
 import pt.ipt.dam.waterme.data.model.PlantLog
 
-@Database(entities = [Plant::class, PlantLog::class], version = 2, exportSchema = false)
+@Database(entities = [Plant::class, PlantLog::class], version = 3, exportSchema = false)
 abstract class WaterMeDatabase : RoomDatabase() {
 
     abstract fun plantDao(): PlantDao
